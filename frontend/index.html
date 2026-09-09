@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Image Colorizer</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="page">
+<header>
+<div class="eyebrow">DEEP LEARNING · IMAGE RESTORATION</div>
+<h1>AI Image Colorizer</h1>
+<p>Upload a black-and-white photograph and generate a colorized version locally with your DeOldify ONNX model.</p>
+</header>
+<main class="card">
+<input id="fileInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden>
+<div id="dropZone" class="drop">
+<div class="plus">＋</div>
+<h2>Upload a black &amp; white image</h2>
+<p>Click to browse or drag &amp; drop</p>
+<small>JPG · JPEG · PNG · up to 15 MB</small>
+</div>
+<div id="fileInfo" class="file hidden">
+<span id="fileName"></span><button id="removeButton">Remove</button>
+</div>
+<div id="workspace" class="workspace hidden">
+<div><h3>ORIGINAL</h3><div class="frame"><img id="originalPreview"></div></div>
+<div class="arrow">→</div>
+<div><h3>COLORIZED</h3><div class="frame"><span id="placeholder">Result appears here</span><img id="resultPreview" class="hidden"></div></div>
+</div>
+<div class="controls">
+<button id="colorizeButton" disabled>Colorize Image <span id="spinner" class="hidden">◌</span></button>
+<a id="downloadButton" class="download hidden" download="colorized.png">Download Result</a>
+</div>
+<div id="status"></div>
+</main>
+<footer>AI-generated colors are predictions and may not be historically accurate.</footer>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
