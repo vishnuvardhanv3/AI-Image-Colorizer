@@ -5,24 +5,36 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
-from .colorizer import Colorizer
+from .colorizer import Colorizer, MODEL_PATH
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-app = FastAPI(title="AI Image Colorizer", version="1.1.0")
+app = FastAPI(title="AI Image Colorizer", version="1.2.0")
 colorizer = Colorizer()
 
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "frontend")), name="static")
+
 
 @app.get("/")
 def home():
     return FileResponse(BASE_DIR / "frontend" / "index.html")
 
+
 @app.get("/health")
 def health():
-    return {"status": "ok", "model_present": (BASE_DIR / "models" / "deoldify-quant.onnx").exists()}
+    return {
+        "status": "ok",
+        "model_present": MODEL_PATH.exists(),
+        "model_loaded": colorizer.session is not None,
+        "model_path": str(MODEL_PATH.relative_to(BASE_DIR)),
+        "model_type": "DeOldify ONNX",
+        "execution_provider": colorizer.providers,
+        "loaded_from_cache": colorizer.loaded_from_cache,
+        "downloaded_this_process": colorizer.downloaded_this_process,
+    }
+
 
 @app.post("/api/colorize")
 async def colorize(file: UploadFile = File(...)):
@@ -52,6 +64,7 @@ async def colorize(file: UploadFile = File(...)):
         raise HTTPException(500, f"Colorization failed: {e}")
 
     return {"id": job_id, "result_url": f"/api/result/{job_id}"}
+
 
 @app.get("/api/result/{job_id}")
 def result(job_id: str):
